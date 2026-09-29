@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ soil.name }} - Details</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #fdfdfb; color: #333; }
+        nav { background-color: #22c55e; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .nav-logo { display: flex; align-items: center; gap: 10px; }
+        .nav-logo img { height: 50px; width: 50px; border-radius: 50%; object-fit: cover; }
+        .nav-logo span { color: white; font-weight: bold; font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .nav-links a { color: white; text-decoration: none; margin: 0 10px; font-weight: 500; padding: 8px 12px; transition: 0.3s; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); border-radius: 5px; }
+
+        .detail-container { max-width: 800px; margin: 50px auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .detail-img { width: 100%; height: 350px; object-fit: cover; }
+        .detail-content { padding: 40px; }
+        .detail-title { font-size: 2.5rem; color: #8a6a44; margin-bottom: 20px; text-transform: capitalize; }
+        .detail-desc { font-size: 1.1rem; color: #555; line-height: 1.6; margin-bottom: 30px; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .info-box { background: #fdf8f4; padding: 20px; border-radius: 10px; border-left: 5px solid #d19f6a; }
+        .info-box span { display: block; font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .info-box strong { font-size: 1.1rem; color: #8a6a44; }
+
+        .crop-badge { display: inline-block; background: #e6f6ec; color: #059669; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; margin-right: 5px; margin-bottom: 5px;}
+
+        .back-btn { display: inline-block; margin-top: 30px; padding: 10px 25px; background: #d19f6a; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; transition: 0.3s; }
+        .back-btn:hover { background: #8a6a44; }
+        footer { margin-top: 50px; background: #8a6a44; color: white; padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <nav style="display: flex; justify-content: space-between; align-items: center; background-color: #22c55e; padding: 10px 20px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="/static/farm.avif" alt="Logo" style="height: 50px; width: 50px; border-radius: 50%; object-fit: cover;">
+            <span style="color: white; font-weight: bold; font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path><path d="M12 6v6l4 2"></path></svg>
+                Agriculture Helper
+            </span>
+        </div>
+        <div>
+            <a href="/index" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">HOME</a>
+            <a href="/dashboard" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">DASHBOARD</a>
+            <a href="/crops" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">CROPS</a>
+            <a href="/soil" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">SOIL</a>
+            <a href="/crop-finder" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">CROP FINDER</a>
+            <a href="/fertilizers" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">FERTILIZERS</a>
+            <a href="/market" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">MARKET</a>
+            <a href="/cart" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">CART</a>
+            {% if session.get('user') and session['user']['role'] == 'admin' %}
+            <a href="/admin-dashboard" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">ADMIN</a>
+            {% endif %}
+            <a href="/about" style="color: white; text-decoration: none; margin: 0 10px; font-weight: 500;">ABOUT</a>
+            <a href="/logout" style="color: #ef4444; font-weight: bold; margin-left: 15px; text-decoration: none;">LOGOUT</a>
+        </div>
+    </nav>
+
+    <div class="detail-container">
+        <img src="{{ soil.image }}" alt="{{ soil.name }}" class="detail-img">
+        <div class="detail-content">
+            <h1 class="detail-title">{{ soil.name }}</h1>
+            <p class="detail-desc">{{ soil.description }}</p>
+            
+            <div style="margin-bottom: 25px;">
+                <h3 style="color: #666; margin-bottom: 15px;">Best Crops Identified:</h3>
+                {% for best_crop in soil.best_crops.split(',') %}
+                    <span class="crop-badge" style="display: inline-flex; align-items: center; gap: 4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                        {{ best_crop.strip() }}
+                    </span>
+                {% endfor %}
+            </div>
+
+            <div class="info-grid">
+                <div class="info-box">
+                    <span>Texture Profile</span>
+                    <strong>{{ soil.texture }}</strong>
+                </div>
+                <div class="info-box">
+                    <span>Visual Color</span>
+                    <strong>{{ soil.color }}</strong>
+                </div>
+                <div class="info-box">
+                    <span>pH Value range</span>
+                    <strong>{{ soil.ph }}</strong>
+                </div>
+                <div class="info-box">
+                    <span>Fertility Rate</span>
+                    <strong>{{ soil.fertility }}</strong>
+                </div>
+                <div class="info-box">
+                    <span>Moisture Retention</span>
+                    <strong>{{ soil.moisture }}</strong>
+                </div>
+            </div>
+
+            <a href="/soil" class="back-btn">← Back to Soil Variants</a>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Agriculture Helper Portal</footer>
+</body>
+</html>

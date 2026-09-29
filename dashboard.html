@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - Agriculture Helper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #15803d;
+            --primary-dark: #166534;
+            --primary-light: #22c55e;
+            --accent: #eab308;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 25px rgba(22, 101, 52, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .svg-icon {
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, #166534, #15803d);
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-logo img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #86efac;
+        }
+
+        .nav-logo-text {
+            color: white;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #dcfce7;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .nav-admin-badge {
+            background: #fef08a;
+            color: #854d0e !important;
+            font-weight: 700 !important;
+            padding: 6px 12px !important;
+            border-radius: 6px !important;
+        }
+
+        .nav-logout {
+            color: #fca5a5 !important;
+            font-weight: 700;
+        }
+
+        .nav-logout:hover {
+            background: rgba(239, 68, 68, 0.2) !important;
+            color: white !important;
+        }
+
+        /* Hero Banner */
+        .farmer-hero {
+            background: linear-gradient(135deg, rgba(22, 101, 52, 0.95), rgba(21, 128, 61, 0.9)), url('/static/farm.avif') center/cover;
+            color: white;
+            padding: 40px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .hero-text h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hero-text p {
+            font-size: 1.05rem;
+            color: #dcfce7;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .hero-profile-chip {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 14px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .hero-chip-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .hero-chip-info h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .hero-chip-info span {
+            font-size: 0.8rem;
+            color: #fef08a;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            flex: 1;
+        }
+
+        /* Admin Notification Alert */
+        .admin-banner {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-banner a {
+            background: #2563eb;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Weather & Advisory Widget */
+        .advisory-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 850px) {
+            .advisory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .widget-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .widget-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Weather Card Details */
+        .weather-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .weather-temp {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #166534;
+        }
+
+        .weather-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        .weather-metrics strong {
+            color: #0f172a;
+        }
+
+        .advisory-tip {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            color: #92400e;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        /* Quick Crop Advisor Form */
+        .advisor-form-group {
+            margin-bottom: 14px;
+        }
+
+        .advisor-form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .advisor-select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            outline: none;
+            background: white;
+        }
+
+        .advisor-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .advisor-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .recommendation-result {
+            display: none;
+            margin-top: 15px;
+            padding: 14px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: #166534;
+        }
+
+        /* Market Rates Ribbon */
+        .market-ribbon {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .mandi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .mandi-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .mandi-card:hover {
+            transform: translateY(-2px);
+            border-color: #86efac;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .mandi-crop-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .mandi-crop-variety {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .mandi-price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #15803d;
+            margin-bottom: 6px;
+        }
+
+        .mandi-trend {
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .trend-up { background: #dcfce7; color: #15803d; }
+        .trend-down { background: #fee2e2; color: #b91c1c; }
+        .trend-stable { background: #f1f5f9; color: #475569; }
+
+        /* Portal Services Grid */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: #86efac;
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: #f0fdf4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .service-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .service-card a {
+            background: #15803d;
+            color: white;
+            padding: 9px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
+        }
+
+        .service-card a:hover {
+            background: #166534;
+        }
+
+        /* Farmer's Activity Split */
+        .activity-split {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .activity-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-confirmed { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+
+        .flash-alert {
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        footer {
+            background: #166534;
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+            font-size: 0.88rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Navigation -->
+    <nav>
+        <a href="/dashboard" class="nav-logo">
+            <img src="/static/farm.avif" alt="Logo">
+            <div class="nav-logo-text">
+                <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                <span>Agriculture Helper</span>
+            </div>
+        </a>
+        <div class="nav-links">
+            <a href="/index">HOME</a>
+            <a href="/dashboard" class="active">DASHBOARD</a>
+            <a href="/crops">CROPS</a>
+            <a href="/soil">SOIL</a>
+            <a href="/crop-finder">CROP FINDER</a>
+            <a href="/fertilizers">FERTILIZERS</a>
+            <a href="/market">MARKET</a>
+            <a href="/cart">CART</a>
+            {% if session.get('user') and session['user']['role'] == 'admin' %}
+            <a href="/admin-dashboard" class="nav-admin-badge">
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                ADMIN PANEL
+            </a>
+            {% endif %}
+            <a href="/about">ABOUT</a>
+            <a href="/logout" class="nav-logout">LOGOUT</a>
+        </div>
+    </nav>
+
+    <!-- Farmer Hero Banner -->
+    <header class="farmer-hero">
+        <div class="hero-container">
+            <div class="hero-text">
+                <h1>
+                    <svg class="svg-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    <span>Welcome, {{ user.name if user else 'Farmer' }}!</span>
+                </h1>
+                <p>Your personalized farming portal. Access real-time mandi prices, weather forecasts, crop guides, soil analytics, and direct support.</p>
+            </div>
+            <div class="hero-profile-chip">
+                <div class="hero-chip-avatar">
+                    <svg class="svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="hero-chip-info">
+                    <h3>{{ user.name if user else 'Farmer Demo' }}</h3>
+                    <span>{{ user.role if user else 'Farmer' }} Account</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="flash-alert">
+                        <svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>{{ msg }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Admin quick redirect banner (if user is admin) -->
+        {% if session.get('user') and session['user']['role'] == 'admin' %}
+        <div class="admin-banner">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <strong>Administrator Access Detected:</strong> You can manage all users, crop catalogs, and live market prices in the Admin Command Center.
+            </div>
+            <a href="/admin-dashboard">Open Admin Dashboard</a>
+        </div>
+        {% endif %}
+
+        <!-- Advisory & Smart Tool Section -->
+        <div class="advisory-grid">
+            
+            <!-- Live Agricultural Weather & Advisory -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h2>
+                        <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                        </svg>
+                        <span>Farming Weather & Field Advisory</span>
+                    </h2>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Today's Live Report</span>
+                </div>
+                <div class="weather-content">
+                    <div>
+                        <div class="weather-temp">29°C</div>
+                        <div style="font-size: 0.9rem; font-weight: 600; color: #166534;">Partly Cloudy with Humidity</div>
+                    </div>
+                    <div class="weather-metrics">
+                        <div>Humidity: <strong>68%</strong></div>
+                        <div>Rainfall: <strong>15% chance</strong></div>
+                        <div>Wind Speed: <strong>11 km/h</strong></div>
+                        <div>Soil Temp: <strong>24°C</strong></div>
+                    </div>
+                </div>
+                <div class="advisory-tip">
+                    <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="9" y1="18" x2="15" y2="18"></line>
+                        <line x1="10" y1="22" x2="14" y2="22"></line>
+                        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                    </svg>
+                    <div>
+                        <strong>Expert Agronomist Tip:</strong> Weather conditions are highly favorable for foliar spray application and secondary soil tillage. Avoid over-watering if Kharif showers are expected.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instant Smart Crop Advisor -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h2>
+                        <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                            <rect x="9" y="9" width="6" height="6"></rect>
+                            <line x1="9" y1="1" x2="9" y2="4"></line>
+                            <line x1="15" y1="1" x2="15" y2="4"></line>
+                            <line x1="9" y1="20" x2="9" y2="23"></line>
+                            <line x1="15" y1="20" x2="15" y2="23"></line>
+                            <line x1="20" y1="9" x2="23" y2="9"></line>
+                            <line x1="20" y1="14" x2="23" y2="14"></line>
+                            <line x1="1" y1="9" x2="4" y2="9"></line>
+                            <line x1="1" y1="14" x2="4" y2="14"></line>
+                        </svg>
+                        <span>Quick Crop Recommendation</span>
+                    </h2>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Instant Match</span>
+                </div>
+                <form id="advisorForm" onsubmit="event.preventDefault(); recommendCrop();">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="advisor-form-group">
+                            <label>Your Soil Type</label>
+                            <select id="advSoil" class="advisor-select">
+                                <option value="black">Black Soil (Clay)</option>
+                                <option value="clayey">Clayey Soil (Heavy)</option>
+                                <option value="loamy" selected>Loamy Soil (Balanced)</option>
+                                <option value="red">Red Soil (Laterite)</option>
+                                <option value="sandy">Sandy Soil (Light)</option>
+                                <option value="silt">Silt Soil (Fertile)</option>
+                            </select>
+                        </div>
+                        <div class="advisor-form-group">
+                            <label>Current Season</label>
+                            <select id="advSeason" class="advisor-select">
+                                <option value="kharif" selected>Kharif (Monsoon/July-Oct)</option>
+                                <option value="rabi">Rabi (Winter/Oct-March)</option>
+                                <option value="summer">Summer (Feb-May)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="advisor-btn">
+                        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        <span>Get Instant Crop Advice</span>
+                    </button>
+                </form>
+
+                <div id="recommendationResult" class="recommendation-result">
+                    <strong id="recCropTitle">Top Recommendation: Wheat & Corn</strong>
+                    <p id="recCropDesc" style="margin-top: 4px; font-size: 0.82rem; color: #14532d;"></p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Live Mandi Rates Ribbon -->
+        <div class="market-ribbon">
+            <div class="widget-header">
+                <h2>
+                    <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                    <span>Live Mandi Market Prices (Today)</span>
+                </h2>
+                <a href="/market" style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.88rem;">View All Mandi Rates →</a>
+            </div>
+            <div class="mandi-grid">
+                {% for item in market_data[:4] %}
+                <div class="mandi-card">
+                    <div class="mandi-crop-name">{{ item.crop }}</div>
+                    <div class="mandi-crop-variety">Variety: {{ item.variety }}</div>
+                    <div class="mandi-price">{{ item.price }}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="mandi-trend trend-{{ item.trend }}">
+                            {% if item.trend == 'up' %}
+                            <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                            {% elif item.trend == 'down' %}
+                            <svg class="svg-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                            {% else %}
+                            <svg class="svg-icon" width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="12" r="10"></circle>
+                            </svg>
+                            {% endif %}
+                            {{ item.change }}
+                        </span>
+                        <a href="/trade/{{ item.id }}" style="font-size: 0.78rem; color: #166534; font-weight: 700; text-decoration: none;">Trade →</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Core Agriculture Helper Services -->
+        <h2 class="section-title">
+            <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            <span>Agriculture Helper Services</span>
+        </h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 0 1 10 10c0 5.5-4.5 10-10 10S2 17.5 2 12A10 10 0 0 1 12 2z"></path>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                </div>
+                <h3>Crops Encyclopedia</h3>
+                <p>Explore {{ crops_count }} major commercial and food grain crops, optimal rainfall, pH, and yield details.</p>
+                <a href="/crops">Explore Crops Guide →</a>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 2v7.31"></path>
+                        <path d="M14 9.3V1.99"></path>
+                        <path d="M8.5 2h7"></path>
+                        <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+                        <path d="M5.52 16h12.96"></path>
+                    </svg>
+                </div>
+                <h3>Soil Health & Types</h3>
+                <p>Identify your soil texture, water holding capacity, and matching crops across {{ soils_count }} soil categories.</p>
+                <a href="/soil">Check Soil Guide →</a>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h3>Fertilizer Calculator</h3>
+                <p>Learn balanced N-P-K applications, dosages for Urea, DAP, MOP, and application precautions.</p>
+                <a href="/fertilizers">View Fertilizer Guide →</a>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <h3>Smart Crop Finder</h3>
+                <p>Input your local farm conditions and get precision crop recommendations automatically.</p>
+                <a href="/crop-finder">Launch Crop Finder →</a>
+            </div>
+        </div>
+
+        <!-- Farmer Personal Activity Split -->
+        <div class="activity-split">
+            
+            <!-- My Recent Trade Orders -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h2>
+                        <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span>My Recent Transactions</span>
+                    </h2>
+                    <a href="/cart" style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.85rem;">View Full Cart →</a>
+                </div>
+                {% if transactions %}
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Crop</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in transactions[:4] %}
+                            <tr>
+                                <td>{{ t.date }}</td>
+                                <td><strong>{{ t.crop_name }}</strong></td>
+                                <td>
+                                    <span style="font-weight: 700; color: {{ '#16a34a' if t.action == 'BUY' else '#dc2626' }};">
+                                        {{ t.action }}
+                                    </span>
+                                </td>
+                                <td>₹ {{ t.price }}</td>
+                                <td>{{ t.quantity }} Qtl</td>
+                                <td><span class="status-badge status-confirmed">{{ t.status }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 35px 20px; color: var(--text-muted);">
+                    <div style="margin-bottom: 8px;">
+                        <svg class="svg-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                    </div>
+                    <p>No transactions yet. Visit the Market to start buying or selling your harvest.</p>
+                    <a href="/market" style="display: inline-block; margin-top: 12px; color: var(--primary); font-weight: 700; text-decoration: none;">Go to Market →</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Ask an Agriculture Expert -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h2>
+                        <svg class="svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Ask an Agriculture Specialist</span>
+                    </h2>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Farmer Support</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Have questions about crop diseases, pest control, or soil fertilizer? Send your query directly to our agriculture administration team.
+                </p>
+                <form action="/farmer/submit-query" method="POST">
+                    <input type="hidden" name="name" value="{{ user.name if user else 'Farmer' }}">
+                    <input type="hidden" name="email" value="{{ user.email if user else 'farmer@gmail.com' }}">
+                    
+                    <div style="margin-bottom: 12px;">
+                        <input type="text" name="subject" class="advisor-select" placeholder="Subject (e.g. Pest control for Cotton, Soil test)" required>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <textarea name="message" rows="3" class="advisor-select" placeholder="Describe your farm issue, soil type, or question in detail..." required></textarea>
+                    </div>
+                    <button type="submit" class="advisor-btn" style="background: #15803d;">
+                        <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        <span>Submit Support Ticket</span>
+                    </button>
+                </form>
+
+                <!-- Past inquiries list -->
+                {% if queries %}
+                <div style="margin-top: 18px; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                    <h4 style="font-size: 0.82rem; color: #475569; text-transform: uppercase; margin-bottom: 8px;">My Recent Queries</h4>
+                    {% for q in queries[:2] %}
+                    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; margin-bottom: 6px; font-size: 0.82rem;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 600;">
+                            <span>{{ q.subject }}</span>
+                            <span class="status-badge {{ 'status-confirmed' if q.status == 'Resolved' else 'status-pending' }}">{{ q.status }}</span>
+                        </div>
+                        <div style="color: var(--text-muted); margin-top: 4px;">{{ q.message[:60] }}...</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Agriculture Helper Portal | Empowering Farmers with Smart Technology & Real-time Data</p>
+    </footer>
+
+    <!-- Interactive Advisor Script -->
+    <script>
+        function recommendCrop() {
+            const soil = document.getElementById('advSoil').value;
+            const season = document.getElementById('advSeason').value;
+            const resBox = document.getElementById('recommendationResult');
+            const title = document.getElementById('recCropTitle');
+            const desc = document.getElementById('recCropDesc');
+
+            let crop = "Wheat & Maize";
+            let details = "Well-suited for your soil with high yield potential and moderate water requirement.";
+
+            if (soil === "black") {
+                crop = season === "kharif" ? "Cotton & Soybean" : "Wheat & Sugarcane";
+                details = "Black soil has exceptional moisture retention. Perfect for cotton and high-value cash crops.";
+            } else if (soil === "clayey") {
+                crop = "Rice (Paddy) & Sugarcane";
+                details = "Heavy clay soil holds high water content, ideal for paddy transplanting and high-yield sugarcane.";
+            } else if (soil === "loamy") {
+                crop = season === "rabi" ? "Sharbati Wheat & Mustard" : "Corn (Maize) & Vegetables";
+                details = "Loamy soil offers ideal balance of aeration and nutrients for maximum agricultural production.";
+            } else if (soil === "red") {
+                crop = "Groundnut (Peanut) & Pulses";
+                details = "Red soil provides excellent drainage. Pair with balanced NPK fertilizer for optimal harvest.";
+            } else if (soil === "sandy") {
+                crop = "Watermelon, Carrots & Millets";
+                details = "Requires frequent light irrigation and organic mulching for best results.";
+            } else if (soil === "silt") {
+                crop = "Wheat, Rice & Leafy Vegetables";
+                details = "Silt soil offers soft texture with high natural fertility.";
+            }
+
+            title.innerText = "Recommended Crop: " + crop;
+            desc.innerText = details;
+            resBox.style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>
